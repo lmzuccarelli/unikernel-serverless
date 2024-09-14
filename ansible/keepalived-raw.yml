@@ -1,0 +1,13 @@
+---
+- hosts: lba
+  vars_files:
+    - roles/keepalived/vars/server-raw-a.yml
+  roles:
+    - keepalived
+
+- hosts: lbb
+  vars_files:
+    - roles/keepalived/vars/server-raw-b.yml
+  roles:
+    - keepalived
+

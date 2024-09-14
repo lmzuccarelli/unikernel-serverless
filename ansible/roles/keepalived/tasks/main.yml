@@ -1,0 +1,48 @@
+- name: check the status of keepalived
+  command: "which keepalived"
+  register: status
+  ignore_errors: yes
+  tags: check
+
+- debug:
+    var: status.rc 
+
+- name: install keepalived
+  when: status is failed
+  dnf:
+    name: keepalived
+    state: latest
+  become: true
+  become_user: root
+  tags: check
+
+- name: copy keepalived config 
+  ansible.builtin.copy:
+    src: '{{ user_dir }}/{{ project_dir }}/{{ keepalived_config }}'
+    dest: /etc/keepalived/keepalived.conf
+    mode: 0644
+  become: true
+  become_user: root
+  tags: check
+
+- name: make sure the service unit is running
+  shell: "systemctl start keepalived"
+  become: true
+  become_user: root
+  register: output
+  tags: check
+
+- debug: 
+    var: output
+  tags: check
+
+- name: stop the service unit 
+  shell: "systemctl stop keepalived"
+  become: true
+  become_user: root
+  register: output
+  tags: stop
+
+- debug: 
+    var: output
+  tags: stop

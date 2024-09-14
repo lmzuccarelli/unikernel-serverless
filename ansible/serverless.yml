@@ -1,0 +1,7 @@
+---
+- hosts: workers
+  vars_files:
+    - roles/serverless/vars/workers.yml
+  roles:
+    - serverless
+

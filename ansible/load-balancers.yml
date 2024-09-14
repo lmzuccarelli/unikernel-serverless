@@ -1,0 +1,6 @@
+---
+- hosts: lbsrvs
+  vars_files:
+    - roles/serverless/vars/load-balancers.yml
+  roles:
+    - serverless
