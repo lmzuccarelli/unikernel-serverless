@@ -1,5 +1,5 @@
 ansible_user: lzuccarelli
 project_dir: Projects
 user_dir: /home/lzuccarelli
+ansible_sudo_pass: 
 
-os:

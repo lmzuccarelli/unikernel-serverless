@@ -1,42 +1,7 @@
-- name: remove project directories
-  ansible.builtin.file:
-    path: '{{ user_dir }}/{{ project_dir }}/{{ item.name }}'
-    state: absent
-  loop: "{{ repos }}"
-  tags: fetch-build
-
-- name: git checkout the project/s
-  ansible.builtin.git:
-    repo: '{{ item.repo }}'
-    dest: '{{ user_dir }}/{{ project_dir }}/{{ item.name }}'
-    version: main
-  loop: "{{ repos }}"
-  tags: fetch-build
-
-- name: cd into each repo then compile/build
-  shell: 'cd {{ user_dir }}/{{ project_dir }}/{{ item.name }} && make build-release'
-  register: output
-  with_items: "{{ repos }}"
-  tags: fetch-build
-
-- debug: 
-    var: output
-  tags: fetch-build
-
-- name: build each unikernel from binary
-  shell: 'cd {{ user_dir }}/{{ project_dir }}/{{ item.name }} && ops build -c config.json -i {{ item.name }} target/release/{{ item.name }}'
-  register: output_build
-  with_items: "{{ repos }}"
-  tags: fetch-build
-
-- debug: 
-    var: output_build
-  tags: fetch-build
-
 - name: mirror the unikernel images to each node
   copy:
-    src: "{{ user_dir }}/.ops/images/{{ item.name }}"
-    dest: "{{ user_dir }}/.ops/images/{{ item.name }}"
+    src: "{{ user_dir }}/.ops/images/{{ item.image }}"
+    dest: "{{ user_dir }}/.ops/images/{{ item.image }}"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: 0755

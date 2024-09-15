@@ -39,6 +39,7 @@ Execute the following playbooks (in the given order)
 # skip if you have rust installed locally
 ansible-playbook rust.yml -i inventories/local
 
+# install NanoVM ops binary
 ansible-playbook unikernel.yml -i inventories/local 
 ```
 
@@ -48,29 +49,32 @@ ansible-playbook unikernel.yml -i inventories/local
 ansible-playbook unikernel.yml -i inventories/servers
 ```
 
+### Copy and create instances of serverless unikernels
+
+```
+ansible-playbook serverless.yml -i inventories/servers --tags deploy
+```
+
 ### Ensure load balancer servers have keepalived installed
 
 ```
 ansible-playbook keepalived.yml -i inventories/servers --tags check
 ```
 
-### Compile and build convey load-balancer unikerenl locally
+### Compile and build convey load-balancer unikernel locally
 
 ```
 ansible-playbook load-balancers.yml -i inventories/local --tags fetch-build
-```
 
-### Copy and create instances on both worker & load-balancer nodes
-
-```
+# deploy to load balancer nodes
 ansible-playbook load-balancers.yml -i inventories/servers --tags deploy
-ansible-playbook serverless.yml -i inventories/servers --tags deploy
 ```
+
 
 ### Verify using the vrrp (virtual router redundancy protocol) ip address (this may vary according to your keepalived.config)
 
 ```
-curl -d'@files/payload.json' http://192.168.0.100/publish
+curl -d'@files/payload.json' http://192.168.1.100/publish
 ```
 
 ### Pipeline script

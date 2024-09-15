@@ -1,0 +1,82 @@
+- name: remove project directory
+  ansible.builtin.file:
+    path: '{{ user_dir }}/{{ project_dir }}/{{ item.name }}'
+    state: absent
+  loop: "{{ repos }}"
+  delegate_to: localhost
+  tags: fetch-build
+
+- name: git checkout the project
+  ansible.builtin.git:
+    repo: '{{ item.repo }}'
+    dest: '{{ user_dir }}/{{ project_dir }}/{{ item.name }}'
+    version: main
+  loop: "{{ repos }}"
+  delegate_to: localhost
+  tags: fetch-build
+
+- name: cd into repo then compile/build
+  shell: 'cd {{ user_dir }}/{{ project_dir }}/{{ item.name }} && make build-release'
+  register: output
+  delegate_to: localhost
+  with_items: "{{ repos }}"
+  tags: fetch-build
+
+- debug: 
+    var: output
+  tags: fetch-build
+
+- name: copy local lb-setup.toml file for loadbalancers
+  copy:
+    src: "{{ playbook_dir }}/files/lb-setup.toml"
+    dest: "{{ user_dir }}/{{ project_dir }}/{{ item.name }}/lb-setup.toml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  with_items: "{{ repos }}"
+  delegate_to: localhost
+  tags: fetch-build
+
+- name: build unikernel from binary
+  shell: 'cd {{ user_dir }}/{{ project_dir }}/{{ item.name }} && ops build -c config.json -i {{ item.name }} target/release/{{ item.name }}'
+  register: output_build
+  with_items: "{{ repos }}"
+  tags: fetch-build
+
+- debug: 
+    var: output_build
+  tags: fetch-build
+
+- name: delete instances (if exists) on each node
+  shell: 'ops instance delete {{ item.instance }}'
+  register: output_delete
+  with_items: "{{ instances }}"
+  ignore_errors: yes
+  tags: deploy
+
+- debug: 
+    var: output_delete
+  tags: deploy
+
+- name: mirror the unikernel images to each node
+  copy:
+    src: "{{ user_dir }}/.ops/images/{{ item.image }}"
+    dest: "{{ user_dir }}/.ops/images/{{ item.image }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+  with_items: "{{ instances }}"
+  tags: deploy
+
+- name: create unikernel instance on each node
+  command: "ops instance create -p {{ item.port }} -i {{ item.instance }} {{ item.image }}"
+  async: 5
+  poll: 5
+  register: instance
+  with_items: "{{ instances }}" 
+  tags: deploy
+
+- debug: 
+    var: instance
+  tags: deploy
+

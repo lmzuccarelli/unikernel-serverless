@@ -4,6 +4,6 @@ user_dir: /home/lzuccarelli
 
 instances:
     - {port: 3030, instance: "serverless-test-instance" , image: "serverless-test"}
-    - {port: 6379, instance: "redis-server-instance" , image: "redis-server"}
+    - {port: 3031, instance: "serverless-test-instance-2" , image: "serverless-test-2"}
   
 

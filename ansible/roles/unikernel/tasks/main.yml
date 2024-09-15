@@ -2,6 +2,7 @@
   shell: "command -v ops"
   register: ops_exists
   ignore_errors: yes
+  failed_when: false
 
 - name: install unikernel qemu dependencies
   when: ops_exists is failed
