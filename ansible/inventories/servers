@@ -26,10 +26,10 @@
 192.168.1.123
 
 # legend 
-# reference hostname        ip  
-# --------- --------------- ------------- 
-# local     mostro          192.169.1.29
-# lba       optiplex-tre    192.168.169
-# lbb       optiplex-quatro 192.168.1.186
-# srva      optiplex-uno    192.168.45
-# srvb      optiplex-due    192.168.1.123
+# reference hostname        ip             (internal) ch 
+# --------- --------------- -------------  ------------- 
+# local     mostro          192.169.1.29   4 DP          
+# lba       optiplex-tre    192.168.1.169  1 DP
+# lbb       optiplex-quatro 192.168.1.186  1 DP
+# srva      optiplex-uno    192.168.1.45   3 DP
+# srvb      optiplex-due    192.168.1.123  2 DP
